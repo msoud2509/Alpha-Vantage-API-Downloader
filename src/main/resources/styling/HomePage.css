@@ -1,0 +1,7 @@
+.usageLimitLink{
+    -fx-underline: false;
+}
+.usageLimitLink:hover{
+    -fx-underline: true;
+    cursor: pointer;
+}
