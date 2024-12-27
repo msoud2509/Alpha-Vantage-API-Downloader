@@ -30,18 +30,21 @@ STOCK_DATA_TYPES = [("timestamp", "DATE"), ("open", "DECIMAL(10, 2)"), ("high", 
 #     return dataf
 
 @app.route("/download", methods = ["POST"])
-def test_get_and_send():
+def get_alpha_vantage_data():
     app.logger.debug('download route accessed')
     data = request.get_json()
     app.logger.debug(f"Recieved parameters: {data}")
     # Extract data
     symbol = data.get('symbol')
     api_key = data.get('api_key')
-    output_data = {"api":api_key,"symbol":symbol}
-    app.logger.debug("Retrieved data")
+    
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol={symbol}&apikey={api_key}&datatype=csv"
+    req = requests.get(url)
+    app.logger.debug("Retrieved data successfully")
+    dataf = pd.read_csv(io.BytesIO(req.content))
 
     csv_output = io.StringIO()
-    pd.DataFrame([output_data]).to_csv(csv_output, index=False)
+    dataf.to_csv(csv_output, index=False)
     csv_output.seek(0)
     app.logger.debug("Data saved successfully")
     return send_file(io.BytesIO(csv_output.getvalue().encode()), 

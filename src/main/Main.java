@@ -20,7 +20,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        startFlaskApp();
+         startFlaskApp();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("resources/HomePage.fxml"));
             // move stage to hompage controller
@@ -32,7 +32,7 @@ public class Main extends Application {
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(event -> {
                 try {
-                    //stopFlaskApp();
+                    stopFlaskApp();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -51,7 +51,7 @@ public class Main extends Application {
         flaskThread = new Thread(() -> { // new thread to allow clean closing of both flask app and java app
             try {
                 String command = "cmd.exe /c set FLASK_APP=backend.alpha_vantage_api&&" +
-                        " flask run --host=127.0.0.1 --port=5000";
+                        " flask run --host=127.0.0.1 --port=5000 --debug";
                 ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
                 flaskProcess = processBuilder.start();
             } catch (IOException e) {
