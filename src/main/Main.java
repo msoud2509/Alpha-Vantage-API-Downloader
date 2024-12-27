@@ -32,7 +32,7 @@ public class Main extends Application {
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(event -> {
                 try {
-                    stopFlaskApp();
+                    //stopFlaskApp();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

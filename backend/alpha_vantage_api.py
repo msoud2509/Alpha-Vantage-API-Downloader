@@ -3,9 +3,12 @@ import pandas as pd
 import io
 import os
 # IMPLEMENT THIS LATER!!! from sql_loader import create_table, load_data
-from flask import Flask, request
+from flask import Flask, request, send_file
+import csv
+import logging
 
 app = Flask(__name__)
+logging.basicConfig(filename='debug.log', level=logging.DEBUG)
 
 # parameters to retrieve for api request
 # ticker, api_key, function
@@ -28,18 +31,27 @@ STOCK_DATA_TYPES = [("timestamp", "DATE"), ("open", "DECIMAL(10, 2)"), ("high", 
 
 @app.route("/download", methods = ["POST"])
 def test_get_and_send():
+    app.logger.debug('download route accessed')
     data = request.get_json()
-
+    app.logger.debug(f"Recieved parameters: {data}")
     # Extract data
     symbol = data.get('symbol')
-    function = data.get('function')
     api_key = data.get('api_key')
+    output_data = {"api":api_key,"symbol":symbol}
+    app.logger.debug("Retrieved data")
 
-    return f"{symbol}, {function}, {api_key}: success!"
+    csv_output = io.StringIO()
+    pd.DataFrame([output_data]).to_csv(csv_output, index=False)
+    csv_output.seek(0)
+    app.logger.debug("Data saved successfully")
+    return send_file(io.BytesIO(csv_output.getvalue().encode()), 
+                     as_attachment=True,  
+                     mimetype='text/csv',
+                     download_name="test_file.csv")
 
 if __name__ == "__main__":
-    print(os.getpid())
-    app.run(host = "127.0.0.1", port = 5000, debug = False)
+    app.run(host = "127.0.0.1", port = 5000, debug = True)
+    
     
 
 

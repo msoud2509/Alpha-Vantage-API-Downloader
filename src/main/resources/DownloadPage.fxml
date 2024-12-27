@@ -30,9 +30,9 @@
         </rowConstraints>
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="API Key" textAlignment="CENTER" wrappingWidth="99.73675537109375" />
-            <TextField prefHeight="26.0" prefWidth="149.0" GridPane.columnIndex="1" />
+            <TextField fx:id="apiField" prefHeight="26.0" prefWidth="149.0" GridPane.columnIndex="1" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Stock Symbol" textAlignment="CENTER" wrappingWidth="99.73675537109375" GridPane.rowIndex="1" />
-            <TextField prefHeight="26.0" prefWidth="149.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="tickerField" prefHeight="26.0" prefWidth="149.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          </children>
       </GridPane>
    </children>
