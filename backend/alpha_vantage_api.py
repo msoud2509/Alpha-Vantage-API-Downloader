@@ -28,7 +28,7 @@ def scrape_doc_headers():
         header = section.find("h2").get_text()
         if header == "Alpha Intelligence™": # temporary measure, probably will need to add these functions manually
             continue
-        function_dict[header] = []
+        function_dict[header] = {}
         section_code_divs = section.findAll("div", {"class":"python-code"}) # find all code tags to extract functions names
         section_function_titles = section.findAll("h4")
         try:
@@ -52,7 +52,7 @@ def scrape_doc_headers():
             title = title.strip()
 
             params = get_params(function_title)
-            function_dict[header].append({"name":title, "function":section_code[start:end], "parameters":params}) # this is function name 
+            function_dict[header][title] = {"function":section_code[start:end], "parameters":params} # section_code[start:end] is the function name
     
     with open("src/main/resources/functions.json", "w") as f:
         json.dump(function_dict, f, indent=4)

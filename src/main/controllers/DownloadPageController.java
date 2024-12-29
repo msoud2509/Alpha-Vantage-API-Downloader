@@ -23,6 +23,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.ResourceBundle;
 
 import com.google.gson.JsonObject;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import main.DocumentationLoader;
 
 
@@ -81,18 +83,52 @@ public class DownloadPageController implements Initializable {
         for (String elem : functions.keySet()) {
             sectionChoiceBox.getItems().add(elem);
         }
-        sectionChoiceBox.setOnAction(this::handleFunctionChoiceBox);
+        sectionChoiceBox.setOnAction(this::handleSectionChange);
+        functionChoiceBox.setOnAction(this::handleFunctionChange);
     }
+
+
 
     @FXML
     private ChoiceBox functionChoiceBox;
-    private void handleFunctionChoiceBox(Event e) {
-        String section = (String) sectionChoiceBox.getValue();
+    private void handleSectionChange(Event e) {
+        functionNameText.setText("Function Name: ");
+        paramPane.getChildren().clear();
         functionChoiceBox.getItems().clear();
-        JsonArray functionNames = functions.getAsJsonArray(section);
-        for (JsonElement name : functionNames) {
-            functionChoiceBox.getItems().add(name.getAsString());
+        String section = (String) sectionChoiceBox.getValue();
+        JsonObject functionObjects = functions.getAsJsonObject(section);
+        for (String functionHeader : functionObjects.keySet()) {
+            functionChoiceBox.getItems().add(functionHeader);
         }
     }
+
+    @FXML
+    private Text functionNameText;
+    private void handleFunctionChange(Event e) {
+        String sectionHeader = (String) sectionChoiceBox.getValue();
+        String functionHeader = (String) functionChoiceBox.getValue();
+        if (functionHeader == null) {
+            return;
+        }
+        String functionName = functions.get(sectionHeader).getAsJsonObject().get(functionHeader)
+                .getAsJsonObject().get("function").getAsString();
+        functionNameText.setText("Function Name: " + functionName);
+
+        JsonArray params = functions.get(sectionHeader).getAsJsonObject().get(functionHeader)
+                .getAsJsonObject().get("parameters").getAsJsonArray();
+        int row = 0;
+        int col = 0;
+        for (JsonElement elem : params) {
+            paramPane.add(new TextField(elem.getAsString()), col, row);
+            col++;
+            if (col > 3) {
+                row++;
+                col = 0;
+            }
+        }
+    }
+
+    @FXML
+    private GridPane paramPane;
 
 }
