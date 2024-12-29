@@ -22,24 +22,58 @@ def scrape_doc_headers():
     soup = BeautifulSoup(response.content, "html.parser")
     main_content = soup.find("article", {"class":"main-content"})
     function_dict = {}
+    
     for i in range(len(main_content.findAll("section"))):
         section = main_content.findAll("section")[i]
         header = section.find("h2").get_text()
-        if header == "Alpha Intelligence™":
+        if header == "Alpha Intelligence™": # temporary measure, probably will need to add these functions manually
             continue
         function_dict[header] = []
-        section_code_div = section.findAll("div", {"class":"python-code"})
-        for code in section_code_div:
+        section_code_divs = section.findAll("div", {"class":"python-code"}) # find all code tags to extract functions names
+        section_function_titles = section.findAll("h4")
+        try:
+            assert len(section_code_divs) == len(section_function_titles)
+        except AssertionError:
+            print("function names are not lining up with their respective titles")
+        
+        #find all function names and title of section here
+        for code, function_title in zip(section_code_divs, section_function_titles):
             section_code = code.find("code").get_text()
             start = section_code.find("function=") + len("function=")
             end = section_code.find("&")
-            function_dict[header].append(section_code[start:end]) 
+
+            # format text of title
+            title = function_title.get_text()
+            if "Premium" in title:
+                title = title.replace("Premium", "")
+                title = "PREMIUM ONLY - " + title
+            if "Trending" in title:
+                title = title.replace("Trending", "(Trending)")
+            title = title.strip()
+
+            params = get_params(function_title)
+            function_dict[header].append({"name":title, "function":section_code[start:end], "parameters":params}) # this is function name 
+    
     with open("src/main/resources/functions.json", "w") as f:
         json.dump(function_dict, f, indent=4)
-    print(len(function_dict))
 
-    
-    
+def get_params(header_tag):
+    params_lst = []
+    p_tags = header_tag.find_next()
+    while p_tags.name != "h4" and p_tags.name != "div": # stop at next header (div so last section doesn't throw an error)
+        if p_tags.name == "p" and ("❚ Required:" in p_tags.get_text() or "❚ Optional:" in p_tags.get_text()):
+            # format text to be just parameter name
+            param = p_tags.get_text()
+            if "function" in param or "apikey" in param:
+                p_tags = p_tags.find_next()
+                continue # function and apikey are already input fields
+            param = param.replace("❚ Required:", "")
+            param = param.replace("❚ Optional:", "")
+            param = param.strip()
+            params_lst.append(param)
+        p_tags = p_tags.find_next()
+    return params_lst
+
 
 STOCK_DATA_TYPES = [("timestamp", "DATE"), ("open", "DECIMAL(10, 2)"), ("high", "DECIMAL(10, 2)"), ("low", "DECIMAL(10, 2)"),
                     ("close", "DECIMAL(10, 2)"), ("adjusted_close", "DECIMAL(10, 2)"), ("volume", "INTEGER"), ("dividend_amount", "DECIMAL(5, 2)")]
@@ -70,6 +104,7 @@ def get_alpha_vantage_data():
 if __name__ == "__main__":
     # app.run(host = "127.0.0.1", port = 5000, debug = True)
     scrape_doc_headers()
+    
     
     
 
