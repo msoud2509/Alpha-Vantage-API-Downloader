@@ -1,11 +1,18 @@
 package main.controllers;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -13,18 +20,20 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ResourceBundle;
 
 import com.google.gson.JsonObject;
-import javafx.scene.control.TextField;
+import main.DocumentationLoader;
 
-public class DownloadPageController {
 
-    @FXML
-    private Button downloadButton;
+public class DownloadPageController implements Initializable {
+
     @FXML
     private TextField apiField;
     @FXML
     private TextField tickerField;
+    @FXML
+    private Button downloadButton;
 
     @FXML
     private void handleDownload() {
@@ -44,7 +53,6 @@ public class DownloadPageController {
             // send request
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
-
             if (response.statusCode() == 200) {
                 String savePath = "C:/Users/msoud/Downloads/test_file.csv";
                 InputStream inputStream = response.body();
@@ -62,6 +70,28 @@ public class DownloadPageController {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private JsonObject functions = DocumentationLoader.getAPIFunctions();
+    @FXML
+    private ChoiceBox sectionChoiceBox;
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        for (String elem : functions.keySet()) {
+            sectionChoiceBox.getItems().add(elem);
+        }
+        sectionChoiceBox.setOnAction(this::handleFunctionChoiceBox);
+    }
+
+    @FXML
+    private ChoiceBox functionChoiceBox;
+    private void handleFunctionChoiceBox(Event e) {
+        String section = (String) sectionChoiceBox.getValue();
+        functionChoiceBox.getItems().clear();
+        JsonArray functionNames = functions.getAsJsonArray(section);
+        for (JsonElement name : functionNames) {
+            functionChoiceBox.getItems().add(name.getAsString());
         }
     }
 

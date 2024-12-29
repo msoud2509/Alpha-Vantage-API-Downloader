@@ -20,7 +20,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-         startFlaskApp();
+        startFlaskApp();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("resources/HomePage.fxml"));
             // move stage to hompage controller
