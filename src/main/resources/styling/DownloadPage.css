@@ -1,0 +1,19 @@
+.downloadButton {
+    -fx-background-color: blue;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+.downloadButton:disabled {
+    -fx-opacity: 0.5;
+}
+
+.docLink {
+    -fx-underline: false;
+}
+.docLink:hover {
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+.docLink:focused {
+    -fx-focus-color: transparent;
+}
