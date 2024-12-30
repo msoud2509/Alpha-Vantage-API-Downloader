@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 public class Main extends Application {
     private Process flaskProcess;
     private Thread flaskThread;
-    private Thread flaskOutputThread;
 
     @Override
     public void start(Stage primaryStage) {

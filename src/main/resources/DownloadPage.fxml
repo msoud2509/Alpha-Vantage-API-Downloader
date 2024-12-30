@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
 
 <AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.controllers.DownloadPageController">
    <children>
@@ -18,7 +19,10 @@
          <font>
             <Font name="Arial Black" size="36.0" />
          </font></Text>
-      <Button fx:id="downloadButton" layoutX="265.0" layoutY="489.0" mnemonicParsing="false" onAction="#handleDownload" text="Download" />
+      <Button fx:id="downloadButton" layoutX="265.0" layoutY="489.0" mnemonicParsing="false" onAction="#handleDownload" styleClass="downloadButton" stylesheets="@styling/DownloadPage.css" text="Download">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
       <Accordion layoutX="46.0" layoutY="102.0" />
       <GridPane layoutX="75.0" layoutY="118.0" prefHeight="105.0" prefWidth="450.0" vgap="30.0">
         <columnConstraints>
@@ -27,28 +31,31 @@
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="11.399999999999991" minHeight="5.7999938964843665" prefHeight="10.599981689453116" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="11.399999999999991" minHeight="5.7999938964843665" prefHeight="10.599981689453116" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="11.399999999999991" minHeight="5.7999938964843665" prefHeight="10.599981689453116" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="11.399999999999991" minHeight="5.7999938964843665" prefHeight="10.599981689453116" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="17.00000610351563" minHeight="10.0" prefHeight="12.20001831054688" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="API Key" textAlignment="CENTER" wrappingWidth="225.33673095703125" />
             <TextField fx:id="apiField" prefHeight="26.0" prefWidth="159.0" GridPane.columnIndex="1" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Stock Symbol" textAlignment="CENTER" wrappingWidth="226.13671875" GridPane.rowIndex="1" />
-            <TextField fx:id="tickerField" prefHeight="26.0" prefWidth="149.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Function Section" textAlignment="CENTER" wrappingWidth="225.33673095703125" GridPane.rowIndex="2" />
-            <ChoiceBox fx:id="sectionChoiceBox" prefHeight="26.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <ChoiceBox fx:id="functionChoiceBox" prefHeight="26.0" prefWidth="166.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Function" textAlignment="CENTER" wrappingWidth="226.93670654296875" GridPane.rowIndex="3" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Function Section" textAlignment="CENTER" wrappingWidth="225.33673095703125" GridPane.rowIndex="1" />
+            <ChoiceBox fx:id="sectionChoiceBox" prefHeight="26.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ChoiceBox fx:id="functionChoiceBox" prefHeight="26.0" prefWidth="166.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Function" textAlignment="CENTER" wrappingWidth="226.93670654296875" GridPane.rowIndex="2" />
+            <TextFlow fx:id="functionNameFlow" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3">
+               <children>
+                  <Text fill="#49b3ec" strokeType="OUTSIDE" strokeWidth="0.0" text="Function Name: " wrappingWidth="94.93670654296875">
+                     <font>
+                        <Font name="System Italic" size="12.0" />
+                     </font>
+                  </Text>
+               </children>
+            </TextFlow>
          </children>
       </GridPane>
-      <Text fx:id="functionNameText" fill="#49b3ec" layoutX="479.0" layoutY="240.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Function Name: " wrappingWidth="92.5367431640625">
-         <font>
-            <Font name="System Italic" size="12.0" />
-         </font>
-      </Text>
-      <GridPane fx:id="paramPane" layoutX="100.0" layoutY="322.0">
+      <GridPane fx:id="paramPane" hgap="10.0" layoutX="84.0" layoutY="296.0" vgap="20.0">
          <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -61,6 +68,11 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
          </rowConstraints>
       </GridPane>
+      <Text fx:id="parameterWarningText" fill="#e10000" layoutX="148.0" layoutY="463.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="308.0000366210936">
+         <font>
+            <Font name="System Italic" size="12.0" />
+         </font>
+      </Text>
    </children>
    <padding>
       <Insets bottom="10.0" />

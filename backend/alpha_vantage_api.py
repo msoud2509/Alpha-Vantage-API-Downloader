@@ -17,7 +17,7 @@ logging.basicConfig(filename='debug.log', level=logging.DEBUG)
 # ticker, api_key, function
 
 @app.route("/load_functions", methods=["GET"])
-def scrape_doc_headers():
+def scrape_function_info():
     response = requests.get("https://www.alphavantage.co/documentation/")
     soup = BeautifulSoup(response.content, "html.parser")
     main_content = soup.find("article", {"class":"main-content"})
@@ -58,7 +58,7 @@ def scrape_doc_headers():
         json.dump(function_dict, f, indent=4)
 
 def get_params(header_tag):
-    params_lst = []
+    params_dict = {"Required":[], "Optional":[]}
     p_tags = header_tag.find_next()
     while p_tags.name != "h4" and p_tags.name != "div": # stop at next header (div so last section doesn't throw an error)
         if p_tags.name == "p" and ("❚ Required:" in p_tags.get_text() or "❚ Optional:" in p_tags.get_text()):
@@ -67,12 +67,28 @@ def get_params(header_tag):
             if "function" in param or "apikey" in param:
                 p_tags = p_tags.find_next()
                 continue # function and apikey are already input fields
-            param = param.replace("❚ Required:", "")
-            param = param.replace("❚ Optional:", "")
-            param = param.strip()
-            params_lst.append(param)
+            if "Required" in param:
+                param = param.replace("❚ Required:", "")
+                param = param.strip()
+                params_dict["Required"].append(param)
+            elif "Optional" in param:
+                param = param.replace("❚ Optional:", "")
+                param = param.strip()
+                params_dict["Optional"].append(param)
         p_tags = p_tags.find_next()
-    return params_lst
+    return params_dict
+
+def get_param_required():
+    with open("src/main/resources/functions.json", "r") as f:
+        data = json.load(f)
+    param_lst = []
+    for section in data:
+        section_data = data[section]
+        for header in section_data:
+            for param in section_data[header]["parameters"]["Required"]:
+                param_lst.append(param)
+    print(set(param_lst))
+    
 
 
 STOCK_DATA_TYPES = [("timestamp", "DATE"), ("open", "DECIMAL(10, 2)"), ("high", "DECIMAL(10, 2)"), ("low", "DECIMAL(10, 2)"),
@@ -80,14 +96,15 @@ STOCK_DATA_TYPES = [("timestamp", "DATE"), ("open", "DECIMAL(10, 2)"), ("high", 
 
 @app.route("/download", methods = ["POST"])
 def get_alpha_vantage_data():
-    app.logger.debug('download route accessed')
-    data = request.get_json()
+    app.logger.debug("download route accessed")
+    data = dict(request.get_json())
     app.logger.debug(f"Recieved parameters: {data}")
     # Extract data
-    symbol = data.get('symbol')
-    api_key = data.get('api_key')
+    param_string = ""
+    for key in data:
+        param_string += f"{key}={data[key]}&"
     
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol={symbol}&apikey={api_key}&datatype=csv"
+    url = f"https://www.alphavantage.co/query?{param_string}datatype=csv"
     req = requests.get(url)
     app.logger.debug("Retrieved data successfully")
     dataf = pd.read_csv(io.BytesIO(req.content))
@@ -101,9 +118,9 @@ def get_alpha_vantage_data():
                      mimetype='text/csv',
                      download_name="test_file.csv")
 
-if __name__ == "__main__":
-    # app.run(host = "127.0.0.1", port = 5000, debug = True)
-    scrape_doc_headers()
+# if __name__ == "__main__":
+#     # app.run(host = "127.0.0.1", port = 5000, debug = True)
+#     get_param_required()
     
     
     

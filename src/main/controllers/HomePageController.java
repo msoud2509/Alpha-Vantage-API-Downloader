@@ -32,6 +32,7 @@ public class HomePageController {
     private void handleGetStarted() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../resources/DownloadPage.fxml"));
+            loader.setControllerFactory(controllerClass -> new DownloadPageController(this.primaryStage));
             Parent root = loader.load();
 
             Scene newScene = new Scene(root);
