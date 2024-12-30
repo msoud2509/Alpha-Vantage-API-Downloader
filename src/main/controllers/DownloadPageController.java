@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,6 +54,9 @@ public class DownloadPageController implements Initializable {
     private Text functionNameText = new Text("");
 
     @FXML
+    private TextFlow docTextFlow;
+
+    @FXML
     private GridPane paramPane;
 
     private TextField[] requiredParamsArr;
@@ -84,6 +88,8 @@ public class DownloadPageController implements Initializable {
         }
         sectionChoiceBox.setOnAction(this::handleSectionChange);
         functionChoiceBox.setOnAction(this::handleFunctionChange);
+
+        docTextFlow.setVisible(false);
     }
 
     private void handleSectionChange(Event e) {
@@ -111,6 +117,7 @@ public class DownloadPageController implements Initializable {
         String functionName = functions.get(sectionHeader).getAsJsonObject().get(functionHeader)
                 .getAsJsonObject().get("function").getAsString();
         functionNameText.setText(functionName);
+        docTextFlow.setVisible(true);
 
 
         JsonArray requiredParams = null;
@@ -143,9 +150,16 @@ public class DownloadPageController implements Initializable {
                 col = 0;
             }
         }
+        optionalParamsArr = new TextField[optionalParams.size()];
+        idx = 0;
         for (JsonElement elem : optionalParams) {
             VBox paramContainer = new VBox();
-            paramContainer.getChildren().addAll(new Text(elem.getAsString()), new TextField());
+
+            TextField currField = new TextField();
+            optionalParamsArr[idx] = currField;
+            idx++;
+
+            paramContainer.getChildren().addAll(new Text(elem.getAsString()), currField);
             paramPane.add(paramContainer, col, row);
             col++;
             if (col > 3) {
@@ -171,8 +185,10 @@ public class DownloadPageController implements Initializable {
     @FXML
     private void handleDownload() {
         JsonArray requiredParams = null;
+        JsonArray optionalParams = null;
         try {
             requiredParams = getParams("Required");
+            optionalParams = getParams("Optional");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -187,6 +203,13 @@ public class DownloadPageController implements Initializable {
             } else {
                 assert requiredParams != null; // shouldn't be null but intellij doesn't like me not having this so yeah
                 jsonData.addProperty(requiredParams.get(i).getAsString(), requiredParamsArr[i].getText());
+            }
+        }
+
+        for (int i = 0; i < optionalParamsArr.length; i++) {
+            if (!optionalParamsArr[i].getText().isEmpty()) {
+                assert optionalParams != null;
+                jsonData.addProperty(optionalParams.get(i).getAsString(), optionalParamsArr[i].getText());
             }
         }
 
@@ -222,6 +245,16 @@ public class DownloadPageController implements Initializable {
                 }
             }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleDocLink() {
+        try {
+            URI uri = new URI("https://www.alphavantage.co/documentation/#:~:text=" + functionNameText.getText());
+            Desktop.getDesktop().browse(uri);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -5,6 +5,9 @@
     -fx-underline: true;
     -fx-cursor: hand;
 }
+.usageLimitLink:focused {
+    -fx-focus-color: transparent;
+}
 
 .startButton {
     -fx-background-color: blue;
